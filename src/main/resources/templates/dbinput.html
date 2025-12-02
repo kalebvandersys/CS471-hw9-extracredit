@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Add New Item to Database</h2>
+<table style="padding-bottom: 20px;">
+    <tr>
+        <td><label style="padding: 5px 35px;" for="name">Name:</label></td>
+        <td><input style="padding: 5px 5px;" type="text" id="name" name="name" placeholder="Placeholder"></td>
+    </tr>
+</table>
+
+<button id="send-data" style="float: right; background: lightblue; padding: 5px 20px">Add Item</button>
+</body>
+<script>
+    document.getElementById("send-data").onclick = function () {
+        const nameValue = document.getElementById("name").value;
+
+        // Send request to the server
+        fetch("/add?name=" + encodeURIComponent(nameValue))
+            .then(response => {
+                window.location.reload();
+            });
+    };
+</script>
+</html>
