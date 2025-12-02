@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.sql.DataSource;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,7 +38,18 @@ import java.util.Map;
 @Controller
 @SpringBootApplication
 public class HerokuApplication {
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int STRING_LENGTH = 10; // length of random string
+    private static final SecureRandom random = new SecureRandom();
 
+    private String getRandomString() {
+        StringBuilder sb = new StringBuilder(STRING_LENGTH);
+        for (int i = 0; i < STRING_LENGTH; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+        return sb.toString();
+    }
   @Value("${spring.datasource.url}")
   private String dbUrl;
 
@@ -57,8 +69,8 @@ public class HerokuApplication {
   String db(Map<String, Object> model) {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS table_timestamp_and_random_string (tick timestamp, random_string varchar(30))");
+        stmt.executeUpdate("INSERT INTO table_timestamp_and_random_string VALUES (now(), '" + getRandomString() + "')");
       ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
 
       ArrayList<String> output = new ArrayList<String>();
